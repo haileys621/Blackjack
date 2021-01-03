@@ -1,0 +1,99 @@
+import random
+
+class Card(object):  
+    
+    def __init__(self, suit, rank):
+        self.suit = suit
+        self.rank = rank
+        
+    def __str__(self):
+        return f'{self.rank} of {self.suit} '
+
+    def value(self, total):
+        # returns value of number cards
+        if self.rank.isdigit():
+            return int(self.rank)
+        else:
+            # returns 10 for non-ace cards
+            # if the sum is above 21 with ace=11, ace=1 instead
+            if self.rank == 'A':
+                if (total + 11) > 21:
+                    return 1
+                else:
+                    return 11
+            else:
+                return 10
+
+
+def make_deck():
+
+    suits = ['♠','♣','♦','♥']
+    ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
+
+    deck = []
+    # creates a Card for each rank in each suit and adds to the deck list
+    for x in suits:
+        for y in ranks:
+            new_card = Card(x, y)
+            deck.append(new_card)
+            
+    # use random.shuffle(deck) to shuffle the deck
+    random.shuffle(deck)
+    return deck 
+
+
+def main():
+    print("Let's play blackjack!")
+    deck = make_deck()
+    user_input = ""
+    user_sum = 0
+    dealer_sum = 0
+    
+    # player's turn is when they keep answering 'y' to getting a card
+    while(user_input.lower() != 'n'):
+        # draws the first card in the deck as the player's new card
+        drawn_card = deck.pop(0)
+        print("You drew", drawn_card)
+        # increments the user's sum
+        user_sum += drawn_card.value(user_sum)
+        print("Your sum:", user_sum)
+        
+        # if the sum is less than 21, they can choose to get another card or let the dealer play
+        if user_sum < 21:
+            user_input = input("Do you want another card? (y/n)")
+        # user sum of 21 is a win
+        elif user_sum == 21:
+            print("You win!")
+            break
+        # user sum greater than 21 is a win for the dealer
+        else:
+            print("You lose, I win!")
+            break
+        
+    # dealer's turn to draw cards
+    if user_input.lower() == 'n':
+        print("Ok, my turn!")
+        while(dealer_sum < 21):
+            # draws first card in the deck list
+            drawn_card = deck.pop(0)
+            print("I drew", drawn_card)
+            # increments dealer sum
+            dealer_sum += drawn_card.value(dealer_sum)
+            print("My sum:",dealer_sum)
+            
+            # if the dealer and user sums are equal it is a draw
+            if dealer_sum == user_sum:
+                print("Our sums are equal - draw")
+                break
+            
+        # dealer wins with sum of 21    
+        if dealer_sum == 21:
+            print("You lose, I win!")
+            
+        # user wins if dealer's sum exceeds 21 
+        elif dealer_sum > 21:
+            print("You win!")
+                
+
+if __name__ == "__main__":
+    main()
